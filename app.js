@@ -6,7 +6,6 @@ import capsuleRoutes from "./routes/capsuleRoutes.js";
 import registerRoutes from "./routes/registerRoutes.js";
 import loginRoutes from "./routes/loginRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
-import generateRoutes from "./routes/generateRoutes.js";
 import fileRoutes from "./routes/fileRoutes.js";
 import { logRequests, initializeLogFile } from "./middlewares/logRequests.js";
 import { initSocket } from "./services/socketService.js";
@@ -16,7 +15,7 @@ const MONITOR_INTERVAL = 1 * 60 * 1000;
 
 const app = express();
 const server = http.createServer(app);
-const PORT = 5000;
+const PORT = process.env.PORT;
 
 const corsOptions = {
   origin: process.env.FRONTEND_URL,
@@ -29,6 +28,7 @@ const corsOptions = {
   ],
 };
 app.use(cors(corsOptions));
+
 app.use(express.json({ limit: "3gb" }));
 app.use(express.urlencoded({ limit: "3gb", extended: true }));
 
@@ -38,7 +38,7 @@ app.use(function (req, res, next) {
 });
 
 app.get("/", (req, res) => {
-  res.redirect("/capsules?limit=99");
+  res.send("Digital Time Capsule API working!");
 });
 
 initializeLogFile();
@@ -58,9 +58,7 @@ setInterval(() => {
   console.log("Checking user activity...");
 }, MONITOR_INTERVAL);
 
-if (process.env.NODE_ENV !== "test") {
-  server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 initSocket(server);
 
