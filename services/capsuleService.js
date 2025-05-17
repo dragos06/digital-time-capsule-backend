@@ -6,7 +6,7 @@ export async function getCapsules({
   status = "All",
   offset = 0,
   limit = 9,
-  userId
+  userId,
 }) {
   offset = parseInt(offset);
   limit = parseInt(limit);
@@ -63,7 +63,13 @@ export async function getCapsuleById(id, userId) {
   };
 }
 
-export async function createCapsule({ title, date, status, description, userId }) {
+export async function createCapsule({
+  title,
+  date,
+  status,
+  description,
+  userId,
+}) {
   const result = await pool.query(
     `INSERT INTO time_capsules (capsule_title, capsule_date, capsule_status, capsule_description, user_id)
        VALUES ($1, $2, $3, $4, $5) RETURNING *`,
@@ -103,31 +109,4 @@ export async function deleteCapsuleById(id, userId) {
   );
 
   return result.rows.length > 0;
-}
-
-export async function generateRandomCapsules(count) {
-  const statuses = ["Locked", "Unlocked"];
-  let generatedCapsules = [];
-
-  for (let i = 0; i < count; i++) {
-    const status = statuses[Math.floor(Math.random() * statuses.length)];
-    const date = new Date(
-      status === "Locked"
-        ? new Date().getTime() + Math.random() * 1000000000
-        : new Date().getTime() - Math.random() * 1000000000
-    ).toISOString().split("T")[0];
-    const title = `Capsule ${Math.random().toString(36).substring(7)}`;
-    const description = `Description of capsule ${Math.random().toString(36).substring(7)}`;
-
-    const newCapsule = {
-      title,
-      date,
-      status,
-      description,
-    };
-
-    generatedCapsules.push(newCapsule);
-  }
-
-  return generatedCapsules;
 }

@@ -1,6 +1,6 @@
 import pool from "../db/pool.js";
 
-const SUSPICIOUS_THRESHOLD = 100; // e.g., 100 actions in the past day
+const SUSPICIOUS_THRESHOLD = 100;
 
 export async function monitorUserActivity() {
   try {
@@ -14,7 +14,6 @@ export async function monitorUserActivity() {
 
     const suspiciousUsers = result.rows.map(row => row.user_id);
 
-    // Replace previous monitored users
     await pool.query('TRUNCATE monitored_users RESTART IDENTITY');
     for (const userId of suspiciousUsers) {
       await pool.query('INSERT INTO monitored_users (user_id) VALUES ($1)', [userId]);

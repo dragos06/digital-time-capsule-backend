@@ -12,7 +12,6 @@ function initSocket(server) {
       socket.handshake.headers["x-forwarded-for"] || socket.handshake.address;
     console.log(`New client connected: ${socket.id} | IP: ${ip}`);
 
-    // Fetch stats and emit to client
     const stats = await getCapsuleStats();
     socket.emit("capsuleStats", stats);
 

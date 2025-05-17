@@ -6,7 +6,6 @@ export const getCapsulesController = async (req, res) => {
     const userId = req.user.id;
     const data = await getCapsules({...req.query, userId});
     res.json(data);
-    //await logUserAction(userId, "FETCH_CAPSULES");
   } catch (err) {
     console.error("Error fetching capsules: ", err);
     res.status(500).json({ error: "Internal server error" });
