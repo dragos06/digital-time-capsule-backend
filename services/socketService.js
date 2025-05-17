@@ -3,12 +3,13 @@ import pool from "../db/pool.js";
 
 function initSocket(server) {
   const io = new Server(server, {
-    cors: { origin: "*" },
-    methods: ["GET", "POST"],
+    cors: { origin: process.env.FRONTEND_URL, methods: ["GET", "POST"] },
+    transports: ["websocket", "polling"],
   });
 
   io.on("connection", async (socket) => {
-    const ip = socket.handshake.headers["x-forwarded-for"] || socket.handshake.address;
+    const ip =
+      socket.handshake.headers["x-forwarded-for"] || socket.handshake.address;
     console.log(`New client connected: ${socket.id} | IP: ${ip}`);
 
     // Fetch stats and emit to client
@@ -24,16 +25,21 @@ function initSocket(server) {
 }
 
 async function getCapsuleStats() {
-  return pool.query(`
+  return pool
+    .query(
+      `
     SELECT capsule_status, COUNT(*) AS count
     FROM time_capsules
     GROUP BY capsule_status
-  `)
-    .then(result => {
+  `
+    )
+    .then((result) => {
       const stats = { locked: 0, unlocked: 0 };
       result.rows.forEach((row) => {
-        if (row.capsule_status === "Locked") stats.locked += parseInt(row.count);
-        if (row.capsule_status === "Unlocked") stats.unlocked += parseInt(row.count);
+        if (row.capsule_status === "Locked")
+          stats.locked += parseInt(row.count);
+        if (row.capsule_status === "Unlocked")
+          stats.unlocked += parseInt(row.count);
       });
       return stats;
     });
