@@ -45,7 +45,6 @@ initializeLogFile();
 app.use(logRequests);
 
 app.use("/capsules", capsuleRoutes);
-app.use("/capsules", generateRoutes);
 app.use("/capsules", fileRoutes);
 app.use("/upload", express.static(join("upload")));
 
